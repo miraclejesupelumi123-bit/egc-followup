@@ -8,7 +8,7 @@ if(document.getElementById('view-admin').classList.contains('active')){renderAdm
 document.getElementById('loading-overlay').style.display='none';
 },function(err){console.error(err);showToast('Could not connect to database.',true);document.getElementById('loading-overlay').style.display='none';});
 addMemberBlock();});
-function switchView(v,btn){document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active');});document.querySelectorAll('.tab-btn').forEach(function(el){el.classList.remove('active');});document.getElementById('view-'+v).classList.add('active');btn.classList.add('active');if(v==='admin')renderAdmin();}
+function switchView(v,btn){if(v==='admin'){var pwd=prompt('Enter admin password:');if(pwd!=='Embrace_global'){showToast('Wrong password.',true);return;}}document.querySelectorAll('.view').forEach(function(el){el.classList.remove('active');});document.querySelectorAll('.tab-btn').forEach(function(el){el.classList.remove('active');});document.getElementById('view-'+v).classList.add('active');btn.classList.add('active');if(v==='admin')renderAdmin();}
 function addMemberBlock(){var container=document.getElementById('members-container');var idx=memberCount++;var div=document.createElement('div');div.className='member-block';div.id='member-block-'+idx;div.innerHTML=memberBlockHTML(idx);container.appendChild(div);}
 function removeMemberBlock(idx){var el=document.getElementById('member-block-'+idx);if(el)el.remove();}
 function memberBlockHTML(i){
