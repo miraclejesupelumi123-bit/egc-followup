@@ -1,4 +1,4 @@
-const firebaseConfig = {
+var firebaseConfig = {
   apiKey: "AIzaSyB5gaFlx4llGtJygmEt-awU-MUakEJE7AU",
   authDomain: "egc---follow-up.firebaseapp.com",
   projectId: "egc---follow-up",
@@ -7,13 +7,6 @@ const firebaseConfig = {
   appId: "1:48796498031:web:075b9f5b63ad3c3789759a"
 };
 
-const isConfigured = true;
-
-let db = null;
-
-if (isConfigured) {
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.firestore();
-} else {
-  console.warn("Firebase not configured yet.");
-}
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
+var isConfigured = true;
