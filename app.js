@@ -299,3 +299,26 @@ function exportToCSV() {
 }
 
 function val(id) { return (document.getElementById(id)?
+.value || '').trim(); }
+function radio(name) { return document.querySelector('input[name="' + name + '"]:checked')?.value || ''; }
+function setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+function today() { return new Date().toISOString().split('T')[0]; }
+function statusClass(s) {
+  if (s === 'Yes — Responded') return 'responded';
+  if (s === 'No — No Response') return 'no-response';
+  if (s === 'Not Around / Travelling') return 'not-around';
+  return 'other-church';
+}
+function statusBadge(s) {
+  var map = {'Yes — Responded':['status-responded','Responded'],'No — No Response':['status-no-response','No Response'],'Not Around / Travelling':['status-not-around','Not Around'],'Now Attending Another Church':['status-other-church','Other Church']};
+  var cls = map[s] ? map[s][0] : 'status-other-church';
+  var label = map[s] ? map[s][1] : (s||'—');
+  return '<span class="rc-status ' + cls + '">' + label + '</span>';
+}
+function showToast(msg, isError) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isError ? '#B84040' : 'var(--green)';
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
