@@ -17,4 +17,4 @@ if (isConfigured) {
   db = firebase.firestore();
 } else {
   console.warn("Firebase not configured yet.");
-}
+} 
