@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EGC Follow-Up Report System</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">✝️</div>
+    <div>
+      <div class="topbar-name">Embrace Global Church</div>
+      <div class="topbar-sub">Follow-Up Report System</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="tab-btn active" onclick="switchView('officer',this)">Log Report</button>
+    <button class="tab-btn" onclick="switchView('admin',this)">Admin View</button>
+  </div>
+</div>
+<div id="loading-overlay" class="loading-overlay">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <p>Connecting to database…</p>
+  </div>
+</div>
+<div id="config-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h2>🔧 Firebase Setup Required</h2>
+    <p>Open <strong>firebase-config.js</strong> and paste your Firebase project credentials.</p>
+    <button class="submit-btn" onclick="document.getElementById('config-modal').style.display='none'">Got it</button>
+  </div>
+</div>
+<div id="view-officer" class="view active">
+  <div class="officer-wrap">
+    <div class="officer-header">
+      <h2>Submit a Follow-Up Report</h2>
+      <p>Log each contact with your assigned first-timers. You can log multiple members in one submission.</p>
+    </div>
+    <div class="form-card">
+      <div class="form-card-header"><div class="form-card-num">1</div><div class="form-card-title">Your Details</div></div>
+      <div class="form-card-body">
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label">Follow-Up Officer</label>
+            <select id="officer-name">
+              <option value="">— Select your name —</option>
+              <option>Rev. Issac Adeyemi</option>
+              <option>Olaolu Anjolaoluwa Oluwafemi</option>
+              <option>Kale Precious Tolulope</option>
+              <option>Oketola Oluwatimileyin</option>
+              <option>Olaolu Tiwalolaoluwa Simisolaoluwa</option>
+              <option>Odutunga Tosin</option>
+              <option>Emmanuel Jacobs</option>
+              <option>Kale Simisolaoluwa</option>
+              <option>Thomas Seun</option>
+              <option>Udom Miracle Jesupelumi</option>
+              <option>Pastor Mrs Bimbo Okoro</option>
+              <option>Pastor Olaleye</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="field-label">Date of Contact</label>
+            <input type="date" id="contact-date"/>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="form-card-header"><div class="form-card-num">2</div><div class="form-card-title">Members Being Followed Up</div></div>
+      <div class="form-card-body">
+        <p style="font-size:13px;color:var(--mid);margin-bottom:16px;">Add one block per member. Click <strong>+ Add Another Member</strong> to log multiple contacts in one report.</p>
+        <div id="members-container"></div>
+        <button class="add-member-btn" onclick="addMemberBlock()">+ Add Another Member</button>
+      </div>
+    </div>
+    <button class="submit-btn" onclick="submitReport()" id="submit-btn">Submit Follow-Up Report</button>
+    <p id="submit-status" style="text-align:center;font-size:13px;margin-top:10px;color:var(--mid);"></p>
+  </div>
+</div>
+<div id="view-admin" class="view">
+  <div class="admin-wrap">
+    <div class="admin-topbar">
+      <div>
+        <h2>All Follow-Up Reports</h2>
+        <p id="report-count-label">Loading…</p>
+      </div>
+      <div class="admin-actions">
+        <button class="export-btn" onclick="exportToCSV()">⬇ Export CSV</button>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-card red"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Total Reports</div></div>
+      <div class="stat-card green"><div class="stat-num" id="stat-responded">—</div><div class="stat-label">Responded</div></div>
+      <div class="stat-card amber"><div class="stat-num" id="stat-noresp">—</div><div class="stat-label">No Response</div></div>
+      <div class="stat-card blue"><div class="stat-num" id="stat-other">—</div><div class="stat-label">Away / Other Church</div></div>
+      <div class="stat-card purple"><div class="stat-num" id="stat-integrated">—</div><div class="stat-label">Fully Integrated</div></div>
+    </div>
+    <div class="member-tracker">
+      <div class="member-tracker-header">
+        <h3>📊 Member Tracker</h3>
+        <span id="tracker-count">—</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="tracker-table">
+          <thead><tr>
+            <th>Member</th><th>Officer</th><th>Weeks</th><th>Latest Status</th><th>Integration</th><th>Last Contact</th>
+          </tr></thead>
+          <tbody id="tracker-body"><tr><td colspan="6" class="empty-cell">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>Filter:</label>
+      <select id="filter-officer" onchange="applyFilters()">
+        <option value="">All Officers</option>
+        <option>Rev. Issac Adeyemi</option>
+        <option>Olaolu Anjolaoluwa Oluwafemi</option>
+        <option>Kale Precious Tolulope</option>
+        <option>Oketola Oluwatimileyin</option>
+        <option>Olaolu Tiwalolaoluwa Simisolaoluwa</option>
+        <option>Odutunga Tosin</option>
+        <option>Emmanuel Jacobs</option>
+        <option>Kale Simisolaoluwa</option>
+        <option>Thomas Seun</option>
+        <option>Udom Miracle Jesupelumi</option>
+        <option>Pastor Mrs Bimbo Okoro</option>
+        <option>Pastor Olaleye</option>
+      </select>
+      <select id="filter-status" onchange="applyFilters()">
+        <option value="">All Statuses</option>
+        <option value="Yes — Responded">Responded</option>
+        <option value="No — No Response">No Response</option>
+        <option value="Not Around / Travelling">Not Around</option>
+        <option value="Now Attending Another Church">Other Church</option>
+      </select>
+      <select id="filter-integration" onchange="applyFilters()">
+        <option value="">All Integration</option>
+        <option value="Fully Integrated">Fully Integrated</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Not Yet">Not Yet</option>
+      </select>
+      <input type="text" id="filter-search" placeholder="Search member name…" oninput="applyFilters()"/>
+    </div>
+    <div class="reports-list" id="reports-list">
+      <div class="empty-state"><div class="icon">📋</div><h3>Loading reports…</h3></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
